@@ -1,0 +1,146 @@
+# Función iterativa para calcular la longitud de una lista
+def calcular_longitud_iterativa(lista):
+    """
+    Calcula la longitud de una lista recorriéndola elemento por elemento.
+    
+    Args:
+        lista: Lista de la cual queremos calcular la longitud
+    
+    Returns:
+        int: Número de elementos en la lista
+    """
+    contador = 0
+    
+    # Recorremos cada elemento de la lista
+    for elemento in lista:
+        contador += 1  # Incrementamos el contador por cada elemento
+    
+    return contador
+
+
+# Función recursiva para calcular la longitud de una lista
+def calcular_longitud_recursiva(lista):
+    """
+    Calcula la longitud de una lista usando recursión.
+    
+    Args:
+        lista: Lista de la cual queremos calcular la longitud
+    
+    Returns:
+        int: Número de elementos en la lista
+    """
+    # Caso base: si la lista está vacía
+    if not lista:
+        return 0
+    
+    # Caso recursivo: 1 + longitud del resto de la lista
+    return 1 + calcular_longitud_recursiva(lista[1:])
+
+
+# Función usando índices para recorrer la lista
+def calcular_longitud_indices(lista):
+    """
+    Calcula la longitud usando índices para recorrer la lista.
+    
+    Args:
+        lista: Lista de la cual queremos calcular la longitud
+    
+    Returns:
+        int: Número de elementos en la lista
+    """
+    contador = 0
+    indice = 0
+    
+    # Seguimos intentando acceder a elementos hasta que se produzca un IndexError
+    try:
+        while True:
+            _ = lista[indice]  # Intentamos acceder al elemento
+            contador += 1     # Si no hay error, incrementamos contador
+            indice += 1       # Pasamos al siguiente índice
+    except IndexError:
+        # Cuando no podemos acceder más elementos, terminamos
+        pass
+    
+    return contador
+
+
+# Función de demostración con ejemplos
+def demo_calculadora_longitud():
+    """
+    Demuestra el funcionamiento de las funciones de cálculo de longitud.
+    """
+    # Ejemplos de listas para probar
+    ejemplos = [
+        [],                           # Lista vacía
+        [1],                         # Lista con un elemento
+        [1, 2, 3, 4, 5],            # Lista con números
+        ['a', 'b', 'c'],            # Lista con strings
+        [1, 'hola', 3.14, True],    # Lista mixta
+        list(range(100))            # Lista grande
+    ]
+    
+    print("=== CALCULADORA DE LONGITUD DE LISTAS ===\n")
+    
+    for i, lista in enumerate(ejemplos, 1):
+        print(f"Ejemplo {i}: {lista if len(lista) <= 10 else f'Lista de {len(lista)} elementos'}")
+        
+        # Calculamos con cada método
+        longitud_iterativa = calcular_longitud_iterativa(lista)
+        longitud_recursiva = calcular_longitud_recursiva(lista)
+        longitud_indices = calcular_longitud_indices(lista)
+        longitud_builtin = len(lista)  # Función incorporada para comparar
+        
+        print(f"  Método iterativo: {longitud_iterativa}")
+        print(f"  Método recursivo: {longitud_recursiva}")
+        print(f"  Método con índices: {longitud_indices}")
+        print(f"  Función len() (referencia): {longitud_builtin}")
+        
+        # Verificamos que todos los métodos dan el mismo resultado
+        if longitud_iterativa == longitud_recursiva == longitud_indices == longitud_builtin:
+            print("  ✓ Todos los métodos coinciden")
+        else:
+            print("  ✗ Error: Los métodos no coinciden")
+        
+        print()
+
+
+# Función para medir rendimiento
+def comparar_rendimiento():
+    """
+    Compara el rendimiento de los diferentes métodos.
+    """
+    import time
+    
+    # Creamos una lista grande para la prueba
+    lista_grande = list(range(10000))
+    
+    print("=== COMPARACIÓN DE RENDIMIENTO ===\n")
+    print(f"Probando con lista de {len(lista_grande)} elementos\n")
+    
+    # Método iterativo
+    inicio = time.time()
+    resultado_iterativo = calcular_longitud_iterativa(lista_grande)
+    tiempo_iterativo = time.time() - inicio
+    
+    # Método con índices
+    inicio = time.time()
+    resultado_indices = calcular_longitud_indices(lista_grande)
+    tiempo_indices = time.time() - inicio
+    
+    # Función incorporada (para comparar)
+    inicio = time.time()
+    resultado_builtin = len(lista_grande)
+    tiempo_builtin = time.time() - inicio
+    
+    print(f"Método iterativo: {resultado_iterativo} elementos en {tiempo_iterativo:.6f} segundos")
+    print(f"Método con índices: {resultado_indices} elementos en {tiempo_indices:.6f} segundos")
+    print(f"Función len(): {resultado_builtin} elementos en {tiempo_builtin:.6f} segundos")
+    
+    # Nota: No incluimos el método recursivo para listas grandes 
+    # porque Python tiene un límite de recursión
+
+
+# Ejecutar las demostraciones
+if __name__ == "__main__":
+    demo_calculadora_longitud()
+    comparar_rendimiento()
