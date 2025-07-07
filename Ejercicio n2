@@ -1,0 +1,299 @@
+class Nodo:
+    """
+    Clase que representa un nodo de la lista enlazada.
+    """
+    def __init__(self, dato):
+        self.dato = dato
+        self.siguiente = None
+    
+    def __str__(self):
+        return str(self.dato)
+
+
+class ListaEnlazada:
+    """
+    Implementación de una lista enlazada simple con método de inversión.
+    """
+    
+    def __init__(self):
+        self.cabeza = None
+        self.tamaño = 0
+    
+    def esta_vacia(self):
+        """Verifica si la lista está vacía."""
+        return self.cabeza is None
+    
+    def agregar_al_inicio(self, dato):
+        """Agrega un elemento al inicio de la lista."""
+        nuevo_nodo = Nodo(dato)
+        nuevo_nodo.siguiente = self.cabeza
+        self.cabeza = nuevo_nodo
+        self.tamaño += 1
+    
+    def agregar_al_final(self, dato):
+        """Agrega un elemento al final de la lista."""
+        nuevo_nodo = Nodo(dato)
+        
+        if self.esta_vacia():
+            self.cabeza = nuevo_nodo
+        else:
+            actual = self.cabeza
+            while actual.siguiente is not None:
+                actual = actual.siguiente
+            actual.siguiente = nuevo_nodo
+        
+        self.tamaño += 1
+    
+    def mostrar(self):
+        """Muestra todos los elementos de la lista."""
+        if self.esta_vacia():
+            return "Lista vacía"
+        
+        elementos = []
+        actual = self.cabeza
+        while actual is not None:
+            elementos.append(str(actual.dato))
+            actual = actual.siguiente
+        
+        return " -> ".join(elementos) + " -> None"
+    
+    def obtener_longitud(self):
+        """Obtiene la longitud de la lista."""
+        return self.tamaño
+    
+    # MÉTODO 1: INVERSIÓN ITERATIVA (Recomendado)
+    def invertir_iterativa(self):
+        """
+        Invierte la lista enlazada usando un enfoque iterativo.
+        Este es el método más eficiente y recomendado.
+        
+        Complejidad: O(n) tiempo, O(1) espacio
+        """
+        if self.esta_vacia() or self.cabeza.siguiente is None:
+            return  # Lista vacía o con un solo elemento
+        
+        anterior = None
+        actual = self.cabeza
+        
+        while actual is not None:
+            siguiente = actual.siguiente  # Guardamos el siguiente nodo
+            actual.siguiente = anterior   # Invertimos el enlace
+            anterior = actual            # Movemos anterior hacia adelante
+            actual = siguiente          # Movemos actual hacia adelante
+        
+        self.cabeza = anterior  # La nueva cabeza es el último nodo procesado
+    
+    # MÉTODO 2: INVERSIÓN RECURSIVA
+    def invertir_recursiva(self):
+        """
+        Invierte la lista enlazada usando recursión.
+        
+        Complejidad: O(n) tiempo, O(n) espacio (por la pila de recursión)
+        """
+        if self.esta_vacia():
+            return
+        
+        self.cabeza = self._invertir_recursiva_auxiliar(self.cabeza)
+    
+    def _invertir_recursiva_auxiliar(self, nodo):
+        """Función auxiliar recursiva para invertir la lista."""
+        # Caso base: si el nodo es None o es el último nodo
+        if nodo is None or nodo.siguiente is None:
+            return nodo
+        
+        # Recursivamente invertir el resto de la lista
+        nueva_cabeza = self._invertir_recursiva_auxiliar(nodo.siguiente)
+        
+        # Invertir el enlace actual
+        nodo.siguiente.siguiente = nodo
+        nodo.siguiente = None
+        
+        return nueva_cabeza
+    
+    # MÉTODO 3: INVERSIÓN USANDO PILA (Stack)
+    def invertir_con_pila(self):
+        """
+        Invierte la lista usando una pila para almacenar los nodos.
+        
+        Complejidad: O(n) tiempo, O(n) espacio
+        """
+        if self.esta_vacia():
+            return
+        
+        pila = []
+        actual = self.cabeza
+        
+        # Agregar todos los nodos a la pila
+        while actual is not None:
+            pila.append(actual)
+            actual = actual.siguiente
+        
+        # Reconstruir la lista desde la pila
+        self.cabeza = pila.pop()
+        actual = self.cabeza
+        
+        while pila:
+            actual.siguiente = pila.pop()
+            actual = actual.siguiente
+        
+        actual.siguiente = None
+    
+    # MÉTODO 4: INVERSIÓN CREANDO NUEVA LISTA
+    def invertir_creando_nueva(self):
+        """
+        Invierte creando una nueva lista y reemplazando la original.
+        
+        Complejidad: O(n) tiempo, O(1) espacio adicional
+        """
+        if self.esta_vacia():
+            return
+        
+        nueva_lista = ListaEnlazada()
+        actual = self.cabeza
+        
+        # Agregar cada elemento al inicio de la nueva lista
+        while actual is not None:
+            nueva_lista.agregar_al_inicio(actual.dato)
+            actual = actual.siguiente
+        
+        # Reemplazar la lista actual
+        self.cabeza = nueva_lista.cabeza
+    
+    # MÉTODO PARA COMPARAR RENDIMIENTO
+    def obtener_lista_como_array(self):
+        """Convierte la lista enlazada a un array para facilitar comparaciones."""
+        elementos = []
+        actual = self.cabeza
+        while actual is not None:
+            elementos.append(actual.dato)
+            actual = actual.siguiente
+        return elementos
+
+
+# Función de demostración
+def demo_inversion_lista():
+    """
+    Demuestra el funcionamiento de los diferentes métodos de inversión.
+    """
+    print("=== DEMOSTRACIÓN DE INVERSIÓN DE LISTA ENLAZADA ===\n")
+    
+    # Crear lista con datos de ejemplo
+    lista = ListaEnlazada()
+    datos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    
+    print("Creando lista con datos:", datos)
+    for dato in datos:
+        lista.agregar_al_final(dato)
+    
+    print(f"Lista original: {lista.mostrar()}")
+    print(f"Longitud: {lista.obtener_longitud()}\n")
+    
+    # Probar método iterativo
+    print("=== MÉTODO ITERATIVO ===")
+    lista_copia = crear_lista_desde_array(datos)
+    print(f"Antes: {lista_copia.mostrar()}")
+    lista_copia.invertir_iterativa()
+    print(f"Después: {lista_copia.mostrar()}\n")
+    
+    # Probar método recursivo
+    print("=== MÉTODO RECURSIVO ===")
+    lista_copia = crear_lista_desde_array(datos)
+    print(f"Antes: {lista_copia.mostrar()}")
+    lista_copia.invertir_recursiva()
+    print(f"Después: {lista_copia.mostrar()}\n")
+    
+    # Probar método con pila
+    print("=== MÉTODO CON PILA ===")
+    lista_copia = crear_lista_desde_array(datos)
+    print(f"Antes: {lista_copia.mostrar()}")
+    lista_copia.invertir_con_pila()
+    print(f"Después: {lista_copia.mostrar()}\n")
+    
+    # Probar método creando nueva lista
+    print("=== MÉTODO CREANDO NUEVA LISTA ===")
+    lista_copia = crear_lista_desde_array(datos)
+    print(f"Antes: {lista_copia.mostrar()}")
+    lista_copia.invertir_creando_nueva()
+    print(f"Después: {lista_copia.mostrar()}\n")
+    
+    # Casos especiales
+    print("=== CASOS ESPECIALES ===")
+    
+    # Lista vacía
+    print("Lista vacía:")
+    lista_vacia = ListaEnlazada()
+    print(f"Antes: {lista_vacia.mostrar()}")
+    lista_vacia.invertir_iterativa()
+    print(f"Después: {lista_vacia.mostrar()}")
+    
+    # Lista con un elemento
+    print("\nLista con un elemento:")
+    lista_uno = ListaEnlazada()
+    lista_uno.agregar_al_final(42)
+    print(f"Antes: {lista_uno.mostrar()}")
+    lista_uno.invertir_iterativa()
+    print(f"Después: {lista_uno.mostrar()}")
+    
+    # Lista con dos elementos
+    print("\nLista con dos elementos:")
+    lista_dos = ListaEnlazada()
+    lista_dos.agregar_al_final("A")
+    lista_dos.agregar_al_final("B")
+    print(f"Antes: {lista_dos.mostrar()}")
+    lista_dos.invertir_iterativa()
+    print(f"Después: {lista_dos.mostrar()}")
+
+
+def crear_lista_desde_array(array):
+    """Función auxiliar para crear una lista enlazada desde un array."""
+    lista = ListaEnlazada()
+    for elemento in array:
+        lista.agregar_al_final(elemento)
+    return lista
+
+
+def comparar_rendimiento():
+    """
+    Compara el rendimiento de los diferentes métodos de inversión.
+    """
+    import time
+    
+    print("\n=== COMPARACIÓN DE RENDIMIENTO ===\n")
+    
+    # Crear lista grande para probar rendimiento
+    datos_grandes = list(range(1000))
+    
+    print(f"Probando con lista de {len(datos_grandes)} elementos\n")
+    
+    # Método iterativo
+    lista_test = crear_lista_desde_array(datos_grandes)
+    inicio = time.time()
+    lista_test.invertir_iterativa()
+    tiempo_iterativo = time.time() - inicio
+    
+    # Método con pila
+    lista_test = crear_lista_desde_array(datos_grandes)
+    inicio = time.time()
+    lista_test.invertir_con_pila()
+    tiempo_pila = time.time() - inicio
+    
+    # Método creando nueva lista
+    lista_test = crear_lista_desde_array(datos_grandes)
+    inicio = time.time()
+    lista_test.invertir_creando_nueva()
+    tiempo_nueva = time.time() - inicio
+    
+    print(f"Método iterativo: {tiempo_iterativo:.6f} segundos")
+    print(f"Método con pila: {tiempo_pila:.6f} segundos") 
+    print(f"Método nueva lista: {tiempo_nueva:.6f} segundos")
+    
+    print(f"\nEl método iterativo es el más eficiente")
+    
+    # Nota: No incluimos el método recursivo para listas grandes
+    # porque Python tiene un límite de recursión
+
+
+# Ejecutar demostraciones
+if __name__ == "__main__":
+    demo_inversion_lista()
+    comparar_rendimiento()
